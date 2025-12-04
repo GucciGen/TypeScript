@@ -1,0 +1,152 @@
+// -------------------- Enum-и --------------------
+enum StudentStatus {
+    Active = "Active",
+    Academic_Leave = "Academic_Leave",
+    Graduated = "Graduated",
+    Expelled = "Expelled"
+}
+
+enum CourseType {
+    Mandatory = "Mandatory",
+    Optional = "Optional",
+    Special = "Special"
+}
+
+enum Semester {
+    First = "First",
+    Second = "Second"
+}
+
+enum GradeEnum {
+    Excellent = 5,
+    Good = 4,
+    Satisfactory = 3,
+    Unsatisfactory = 2
+}
+
+enum Faculty {
+    Computer_Science = "Computer_Science",
+    Economics = "Economics",
+    Law = "Law",
+    Engineering = "Engineering"
+}
+
+interface Student {
+    id: number;
+    fullName: string;
+    faculty: Faculty;
+    year: number;
+    status: StudentStatus;
+    enrollmentDate: Date;
+    groupNumber: string;
+}
+
+interface Course {
+    id: number;
+    name: string;
+    type: CourseType;
+    credits: number;
+    semester: Semester;
+    faculty: Faculty;
+    maxStudents: number;
+}
+
+interface GradeRecord {
+    studentId: number;
+    courseId: number;
+    grade: GradeEnum;
+    date: Date;
+    semester: Semester;
+}
+
+interface CourseRegistration {
+    studentId: number;
+    courseId: number;
+}
+
+class UniversityManagementSystem {
+    private students: Student[] = [];
+    private courses: Course[] = [];
+    private registrations: CourseRegistration[] = [];
+    private grades: GradeRecord[] = [];
+    private nextStudentId: number = 1;
+    private nextCourseId: number = 1;
+
+    enrollStudent(student: Omit<Student, "id">): Student {
+        const newStudent: Student = { id: this.nextStudentId++, ...student };
+        this.students.push(newStudent);
+        return newStudent;
+    }
+
+    updateStudentStatus(studentId: number, newStatus: StudentStatus): void {
+        const student = this.students.find(s => s.id === studentId);
+        if (!student) throw new Error("Студента не знайдено");
+        if (student.status === StudentStatus.Graduated || student.status === StudentStatus.Expelled)
+            throw new Error("Неможливо змінити статус");
+        if (newStatus === StudentStatus.Graduated && student.year < 4)
+            throw new Error("Рік навчання замалий");
+        student.status = newStatus;
+    }
+
+    getStudentsByFaculty(faculty: Faculty): Student[] {
+        return this.students.filter(s => s.faculty === faculty);
+    }
+
+    addCourse(course: Omit<Course, "id">): Course {
+        const newCourse: Course = { id: this.nextCourseId++, ...course };
+        this.courses.push(newCourse);
+        return newCourse;
+    }
+
+    getAvailableCourses(faculty: Faculty, semester: Semester): Course[] {
+        return this.courses.filter(course => {
+            const count = this.registrations.filter(r => r.courseId === course.id).length;
+            return course.faculty === faculty && course.semester === semester && count < course.maxStudents;
+        });
+    }
+
+    registerForCourse(studentId: number, courseId: number): void {
+        const student = this.students.find(s => s.id === studentId);
+        if (!student || student.status !== StudentStatus.Active)
+            throw new Error("Студент недоступний");
+        const course = this.courses.find(c => c.id === courseId);
+        if (!course) throw new Error("Курс не знайдено");
+        if (student.faculty !== course.faculty)
+            throw new Error("Факультети не збігаються");
+        const exists = this.registrations.some(r => r.studentId === studentId && r.courseId === courseId);
+        if (exists) throw new Error("Вже зареєстрований");
+        const count = this.registrations.filter(r => r.courseId === courseId).length;
+        if (count >= course.maxStudents)
+            throw new Error("Ліміт заповнений");
+        this.registrations.push({ studentId, courseId });
+    }
+
+    setGrade(studentId: number, courseId: number, grade: GradeEnum): void {
+        const student = this.students.find(s => s.id === studentId);
+        const course = this.courses.find(c => c.id === courseId);
+        if (!student || !course) throw new Error("Помилка даних");
+        const isRegistered = this.registrations.some(r => r.studentId === studentId && r.courseId === courseId);
+        if (!isRegistered) throw new Error("Не зареєстрований");
+        this.grades.push({
+            studentId,
+            courseId,
+            grade,
+            date: new Date(),
+            semester: course.semester
+        });
+    }
+
+    getStudentGrades(studentId: number): GradeRecord[] {
+        return this.grades.filter(g => g.studentId === studentId);
+    }
+
+    calculateAverageGrade(studentId: number): number {
+        const gs = this.getStudentGrades(studentId);
+        if (gs.length === 0) return 0;
+        return gs.reduce((a, g) => a + g.grade, 0) / gs.length;
+    }
+
+    getExcellentStudentsByFaculty(faculty: Faculty): Student[] {
+        return this.getStudentsByFaculty(faculty).filter(s => this.calculateAverageGrade(s.id) >= 4.5);
+    }
+}
