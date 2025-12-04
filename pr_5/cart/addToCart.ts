@@ -1,0 +1,1 @@
+import { BaseProduct } from "../types"; import { CartItem } from "./cartItem"; export const addToCart=<T extends BaseProduct>(cart:CartItem<T>[],prod:T|undefined,q:number)=>{ if(!prod)return cart; const i=cart.findIndex(c=>c.product.id===prod.id); if(i!==-1){ const u=[*cart]; u[i]={...u[i],quantity:u[i].quantity+q}; return u;} return [*cart,{product:prod,quantity:q}]};

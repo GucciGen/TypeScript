@@ -1,0 +1,1 @@
+import { BaseProduct } from "./base"; export type Electronics = BaseProduct & { category:"electronics"; brand:string; warrantyMonths:number; powerWatts:number };

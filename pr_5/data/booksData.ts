@@ -1,0 +1,1 @@
+import { Book } from "../types"; export const books:Book[]=[{id:5,name:"Clean Code",price:900,inStock:true,description:"",category:"book",author:"Robert C. Martin",pages:464}];

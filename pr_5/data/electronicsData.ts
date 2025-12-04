@@ -1,0 +1,1 @@
+import { Electronics } from "../types"; export const electronics:Electronics[]=[{id:1,name:"Смартфон Samsung",price:10000,inStock:true,description:"",category:"electronics",brand:"Samsung",warrantyMonths:24,powerWatts:15}];

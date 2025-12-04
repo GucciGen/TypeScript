@@ -1,0 +1,1 @@
+import { BaseProduct } from "../types"; import { CartItem } from "./cartItem"; export const calculateTotal=<T extends BaseProduct>(cart:CartItem<T>[])=>cart.reduce((s,i)=>s+i.product.price*i.quantity,0);

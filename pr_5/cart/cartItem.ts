@@ -1,0 +1,1 @@
+import { BaseProduct } from "../types"; export type CartItem<T extends BaseProduct>={product:T;quantity:number};

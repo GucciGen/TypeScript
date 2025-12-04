@@ -1,0 +1,1 @@
+import { BaseProduct } from "./base"; export type Clothing = BaseProduct & { category:"clothing"; size:"XS"|"S"|"M"|"L"|"XL"; material:string; gender:"men"|"women"|"unisex" };

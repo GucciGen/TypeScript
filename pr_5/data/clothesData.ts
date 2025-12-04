@@ -1,0 +1,1 @@
+import { Clothing } from "../types"; export const clothes:Clothing[]=[{id:3,name:"Футболка чорна",price:500,inStock:true,description:"",category:"clothing",size:"M",material:"Cotton",gender:"unisex"}];

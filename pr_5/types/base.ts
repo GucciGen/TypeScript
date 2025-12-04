@@ -1,0 +1,1 @@
+export type BaseProduct = { id:number; name:string; price:number; inStock:boolean; description?:string };

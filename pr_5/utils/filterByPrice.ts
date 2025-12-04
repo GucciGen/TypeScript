@@ -1,0 +1,1 @@
+import { BaseProduct } from "../types"; export const filterByPrice=<T extends BaseProduct>(products:T[],maxPrice:number,minPrice:number=0)=>products.filter(p=>p.price>=minPrice&&p.price<=maxPrice);

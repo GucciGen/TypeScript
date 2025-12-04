@@ -1,0 +1,1 @@
+import { BaseProduct } from "../types"; export const findProduct=<T extends BaseProduct>(products:T[],id:number)=>products.find(p=>p.id===id);
